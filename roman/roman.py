@@ -1,52 +1,53 @@
 from collections import namedtuple
 
-Expansion = namedtuple('Expansion', ['symbol', 'quantity'])
-expansion_rules = [
-    Expansion('M', 1000),
-    Expansion('D', 500),
-    Expansion('C', 100),
-    Expansion('L', 50),
-    Expansion('X', 10),
-    Expansion('V', 5),
-    Expansion('I', 1)
+RomanDigit = namedtuple('RomanDigit', 'symbol quantity')
+roman_digits = [
+    RomanDigit('M', 1000),
+    RomanDigit('D', 500),
+    RomanDigit('C', 100),
+    RomanDigit('L', 50),
+    RomanDigit('X', 10),
+    RomanDigit('V', 5),
+    RomanDigit('I', 1)
 ]
 
-Shortening = namedtuple('Shortening', ['long', 'short'])
-shortening_rules = [
-    Shortening('DCCCC', 'CM'),
-    Shortening('CCCC', 'CD'),
-    Shortening('LXXXX', 'XC'),
-    Shortening('XXXX', 'XL'),
-    Shortening('VIIII', 'IX'),
-    Shortening('IIII', 'IV')
+Abbreviation = namedtuple('Abbreviation', 'long short')
+abbreviations = [
+    Abbreviation('DCCCC', 'CM'),
+    Abbreviation('CCCC', 'CD'),
+    Abbreviation('LXXXX', 'XC'),
+    Abbreviation('XXXX', 'XL'),
+    Abbreviation('VIIII', 'IX'),
+    Abbreviation('IIII', 'IV')
 ]
 
 
 def to_roman(arabic):
-    return str(RomanNumeral(arabic))
+    long_roman = to_long_form_roman(arabic)
+    roman = abbreviate(long_roman)
+
+    return roman
 
 
-class RomanNumeral():
-    def __init__(self, arabic):
-        self.roman = ''
-        self._remainder = arabic
-        self.convert()
+def to_long_form_roman(arabic):
+    roman = ''
+    while arabic > 0:
+        for digit in roman_digits:
+            if arabic >= digit.quantity:
+                roman += digit.symbol
+                arabic -= digit.quantity
+                break
 
-    def __str__(self):
-        return self.roman
-
-    def convert(self):
-        self.expand()
-        self.shorten()
-
-    def expand(self):
-        for exp in expansion_rules:
-            self.roman += exp.symbol * (self._remainder // exp.quantity)
-            self._remainder %= exp.quantity
-
-    def shorten(self):
-        for sub in shortening_rules:
-            self.roman = self.roman.replace(sub.long, sub.short)
+    return roman
 
 
-# First pass. Except for some naming concerns, I like it!
+def abbreviate(roman):
+    for abbr in abbreviations:
+        roman = roman.replace(abbr.long, abbr.short)
+
+    return roman
+
+
+# Second pass. The move away from // and % operations is a big improvement.
+# I'm not sure if a RomanNumeral class (as in the first pass) is warranted;
+# as the above is quite readable and serves its purpose.
