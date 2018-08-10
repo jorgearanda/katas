@@ -20,10 +20,4 @@ class ExponentialMovingAverage():
             self.ema = value * self.alpha + self.ema * (1.0 - self.alpha)
 
 
-# Second pass. Separating the input processing and the calculation
-# makes for a cleaner structure.
-#
-# It also allows for an alternative approach: `put` could keep a list of
-# values so far, and _calc could use a subset for them for the calculation.
-#
-# This would allow, for instance, an EMA of only the last ten values.
+# Third pass. The result was identical to the second.
