@@ -1,9 +1,4 @@
-score_map = {
-    0: 'love',
-    1: '15',
-    2: '30',
-    3: '40'
-}
+points = ['love', '15', '30', '40']
 
 
 class Game():
@@ -13,15 +8,13 @@ class Game():
         self._score_str = 'love all'
         self._winner = None
 
-    def point(self, player):
-        if self._is_over():
-            return
-        if player == self.first.name:
-            self.first.points += 1
+    def point(self, player_name):
+        if player_name == self.first.name:
+            self.first.point()
         else:
-            self.second.points += 1
+            self.second.point()
 
-        self._update_score()
+        self.update_score()
 
     def score(self):
         return self._score_str
@@ -29,36 +22,22 @@ class Game():
     def winner(self):
         return self._winner
 
-    def _update_score(self):
-        if self._is_over():
-            if self._is_first_player_winner():
-                self._winner = self.first.name
-            else:
-                self._winner = self.second.name
-            self._score_str = self._winner + ' wins'
-        elif self.first.points >= 3 and \
-                self.first.points == self.second.points:
-            self._score_str = 'deuce'
-        elif self.first.points > 3 and \
-                self.first.points > self.second.points:
+    def update_score(self):
+        if victory_over(self.first, self.second):
+            self._score_str = self.first.name + ' wins'
+            self._winner = self.first.name
+        elif victory_over(self.second, self.first):
+            self._score_str = self.second.name + ' wins'
+            self._winner = self.second.name
+        elif advantage_over(self.first, self.second):
             self._score_str = 'advantage ' + self.first.name
-        elif self.second.points > 3 and self.second.points > self.first.points:
+        elif advantage_over(self.second, self.first):
             self._score_str = 'advantage ' + self.second.name
+        elif deuce(self.first, self.second):
+            self._score_str = 'deuce'
         else:
-            self._score_str = score_map[self.first.points] + '-' + \
-                score_map[self.second.points]
-
-    def _is_over(self):
-        return self._is_first_player_winner() or \
-            self._is_second_player_winner()
-
-    def _is_first_player_winner(self):
-        return self.first.points >= 4 and \
-            self.first.points - self.second.points > 1
-
-    def _is_second_player_winner(self):
-        return self.second.points >= 4 and \
-            self.second.points - self.first.points > 1
+            self._score_str = points[self.first.points] + '-' + \
+                points[self.second.points]
 
 
 class Player():
@@ -66,7 +45,20 @@ class Player():
         self.name = name
         self.points = 0
 
-# First full pass. I'm not happy with this code!
-# I think part of the problem is that I had to come up with the Kata
-# definition as I went along. I'm hopeful the next iterations
-# will simplify things.
+    def point(self):
+        self.points += 1
+
+
+def victory_over(a, b):
+    return a.points >= 4 and a.points > b.points + 1
+
+
+def advantage_over(a, b):
+    return a.points >= 4 and a.points == b.points + 1
+
+
+def deuce(a, b):
+    return a.points >= 3 and a.points == b.points
+
+# Second pass. Cleaner than the first, but the big if/elif/else
+# method on update_score still rubs me the wrong way.
