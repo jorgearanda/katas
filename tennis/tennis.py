@@ -1,3 +1,5 @@
+from itertools import permutations
+
 points = ['love', '15', '30', '40']
 
 
@@ -8,8 +10,8 @@ class Game():
         self._score_str = 'love all'
         self._winner = None
 
-    def point(self, player_name):
-        if player_name == self.first.name:
+    def point(self, player):
+        if player == self.first.name:
             self.first.point()
         else:
             self.second.point()
@@ -23,21 +25,20 @@ class Game():
         return self._winner
 
     def update_score(self):
-        if victory_over(self.first, self.second):
-            self._score_str = self.first.name + ' wins'
-            self._winner = self.first.name
-        elif victory_over(self.second, self.first):
-            self._score_str = self.second.name + ' wins'
-            self._winner = self.second.name
-        elif advantage_over(self.first, self.second):
-            self._score_str = 'advantage ' + self.first.name
-        elif advantage_over(self.second, self.first):
-            self._score_str = 'advantage ' + self.second.name
-        elif deuce(self.first, self.second):
-            self._score_str = 'deuce'
+        for perm in permutations([self.first, self.second], 2):
+            if victory_over(perm[0], perm[1]):
+                self._score_str = perm[0].name + ' wins'
+                self._winner = perm[0].name
+                break
+            elif advantage_over(perm[0], perm[1]):
+                self._score_str = 'advantage ' + perm[0].name
+                break
         else:
-            self._score_str = points[self.first.points] + '-' + \
-                points[self.second.points]
+            if deuce(self.first, self.second):
+                self._score_str = 'deuce'
+            else:
+                self._score_str = points[self.first.points] + '-' + \
+                    points[self.second.points]
 
 
 class Player():
@@ -60,5 +61,7 @@ def advantage_over(a, b):
 def deuce(a, b):
     return a.points >= 3 and a.points == b.points
 
-# Second pass. Cleaner than the first, but the big if/elif/else
-# method on update_score still rubs me the wrong way.
+# Third pass. Trying something different this time, with the
+# permutations call that may be overkill and leads to a logic
+# that is probably as hard to parse as what I had in the second pass.
+# I still feel like there should be a simpler way, but I can't find it.
