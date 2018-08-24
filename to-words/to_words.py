@@ -1,16 +1,3 @@
-tens = {
-    0: '',
-    1: 'ten ',
-    2: 'twenty ',
-    3: 'thirty ',
-    4: 'forty ',
-    5: 'fifty ',
-    6: 'sixty ',
-    7: 'seventy ',
-    8: 'eighty ',
-    9: 'ninety ',
-}
-
 digits = {
     0: '',
     1: 'one',
@@ -25,6 +12,15 @@ digits = {
 }
 
 exceptions = {
+    'one ten': 'ten',
+    'two ten': 'twenty',
+    'three ten': 'thirty',
+    'four ten': 'forty',
+    'five ten': 'fifty',
+    'six ten': 'sixty',
+    'seven ten': 'seventy',
+    'eight ten': 'eighty',
+    'nine ten': 'ninety',
     'ten one': 'eleven',
     'ten two': 'twelve',
     'ten three': 'thirteen',
@@ -36,26 +32,38 @@ exceptions = {
     'ten nine': 'nineteen',
 }
 
+orders_of_magnitude = {
+    10000: 'ten',
+    1000: 'thousand',
+    100: 'hundred',
+    10: 'ten',
+    1: '',
+}
+
+
 def to_words(n):
     words = ''
-    if n >= 10000:
-        words += tens [n // 10000]
-        n = n % 10000
-    if n >= 1000:
-        words += digits[n // 1000] + ' thousand '
-        n = n % 1000
-    if n >= 100:
-        words += digits[n // 100] + ' hundred '
-        n = n % 100
-    if n >= 10:
-        words += tens[n // 10]
-        n = n % 10
-    words += digits[n]
-    for key, value in exceptions.items():
-        words = words.replace(key, value)
+    for order in orders_of_magnitude:
+        addition, n = order_of_magnitude_words(n, order)
+        words += addition
+
+    for incorrect, correct in exceptions.items():
+        words = words.replace(incorrect, correct)
     words = words.strip()
 
     return words
 
 
-# First pass. Less exciting than I had hoped.
+def order_of_magnitude_words(n, order):
+    words = ''
+    if n >= order:
+        words = digits[n // order] + ' ' + orders_of_magnitude[order] + ' '
+        n %= order
+
+    return words, n
+
+
+# Second pass. I decided to make it a bit more fun this time, with the
+# order_of_magnitude_words bit. Not sure it's a real improvement over the
+# first pass in terms of comprehensibility though; it's an uncalled
+# abstraction. Perhaps poorly named, also.
