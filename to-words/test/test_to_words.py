@@ -83,3 +83,9 @@ def test_12345():
 
 def test_99999():
     assert to_words(99999) == 'ninety nine thousand nine hundred ninety nine'
+
+
+def test_9999999999():
+    assert to_words(9999999999) == \
+        'nine billion nine hundred ninety nine million ' + \
+        'nine hundred ninety nine thousand nine hundred ninety nine'

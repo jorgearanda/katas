@@ -11,6 +11,19 @@ digits = {
     9: 'nine',
 }
 
+orders_of_magnitude = {
+    1000000000: 'billion',
+    100000000: 'hundred',
+    10000000: 'ten',
+    1000000: 'million',
+    100000: 'hundred',
+    10000: 'ten',
+    1000: 'thousand',
+    100: 'hundred',
+    10: 'ten',
+    1: '',
+}
+
 exceptions = {
     'one ten': 'ten',
     'two ten': 'twenty',
@@ -32,21 +45,26 @@ exceptions = {
     'ten nine': 'nineteen',
 }
 
-orders_of_magnitude = {
-    10000: 'ten',
-    1000: 'thousand',
-    100: 'hundred',
-    10: 'ten',
-    1: '',
-}
-
 
 def to_words(n):
-    words = ''
-    for order in orders_of_magnitude:
-        addition, n = order_of_magnitude_words(n, order)
-        words += addition
+    long_form = _long_form_number_text(n)
+    short_form = _eliminate_exceptions(long_form).strip()
 
+    return short_form
+
+
+def _long_form_number_text(n):
+    words = ''
+    for order, denomination in orders_of_magnitude.items():
+        if n >= order:
+            print(order);
+            words += digits[n // order] + ' ' + denomination + ' '
+            n %= order
+
+    return words
+
+
+def _eliminate_exceptions(words):
     for incorrect, correct in exceptions.items():
         words = words.replace(incorrect, correct)
     words = words.strip()
@@ -54,16 +72,9 @@ def to_words(n):
     return words
 
 
-def order_of_magnitude_words(n, order):
-    words = ''
-    if n >= order:
-        words = digits[n // order] + ' ' + orders_of_magnitude[order] + ' '
-        n %= order
-
-    return words, n
-
-
-# Second pass. I decided to make it a bit more fun this time, with the
-# order_of_magnitude_words bit. Not sure it's a real improvement over the
-# first pass in terms of comprehensibility though; it's an uncalled
-# abstraction. Perhaps poorly named, also.
+# Third pass. I think this is a slight improvement over the second.
+# It would be hard to make the function cleaner than it is here,
+# except perhaps in some of the naming choices.
+#
+# I decided to add a few more orders of magnitude, up to a billion,
+# because it was very easy to do so.
