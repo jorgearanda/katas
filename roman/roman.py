@@ -1,29 +1,36 @@
-from collections import namedtuple
+from dataclasses import dataclass
 
-Abbreviation = namedtuple('Abbreviation', 'long short')
-abbreviations = [
-    Abbreviation('I' * 1000, 'M'),
-    Abbreviation('I' * 500, 'D'),
-    Abbreviation('I' * 100, 'C'),
-    Abbreviation('I' * 50, 'L'),
-    Abbreviation('I' * 10, 'X'),
-    Abbreviation('I' * 5, 'V'),
-    Abbreviation('DCCCC', 'CM'),
-    Abbreviation('CCCC', 'CD'),
-    Abbreviation('LXXXX', 'XC'),
-    Abbreviation('XXXX', 'XL'),
-    Abbreviation('VIIII', 'IX'),
-    Abbreviation('IIII', 'IV')
+
+@dataclass
+class Numeral:
+    symbol: str
+    value: int
+
+
+numerals = [
+    Numeral("M", 1000),
+    Numeral("CM", 900),
+    Numeral("D", 500),
+    Numeral("CD", 400),
+    Numeral("C", 100),
+    Numeral("XC", 90),
+    Numeral("L", 50),
+    Numeral("XL", 40),
+    Numeral("X", 10),
+    Numeral("IX", 9),
+    Numeral("V", 5),
+    Numeral("IV", 4),
+    Numeral("I", 1),
 ]
 
 
 def to_roman(arabic):
-    roman = 'I' * arabic
-    for abbr in abbreviations:
-        roman = roman.replace(abbr.long, abbr.short)
+    if arabic == 0:
+        return ""
+    for numeral in numerals:
+        if arabic >= numeral.value:
+            return numeral.symbol + to_roman(arabic - numeral.value)
 
-    return roman
 
-# Third pass. This is so much cleaner than the previous ones!
-# Simple, a single for loop, and a clear path to convert back
-# to arabic. <3
+# Fourth pass, a recursive solution (not my original idea) that feels more
+# elegant than the previous string substitution.
