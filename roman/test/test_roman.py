@@ -1,4 +1,4 @@
-from roman import to_roman
+from roman import to_roman, to_arabic
 
 
 def test_1():
@@ -71,3 +71,16 @@ def test_1024():
 
 def test_3000():
     assert "MMM" == to_roman(3000)
+
+
+def test_I():
+    assert 1 == to_arabic("I")
+
+
+def test_II():
+    assert 2 == to_arabic("II")
+
+
+def test_all():
+    for i in range(1, 4000):
+        assert i == to_arabic(to_roman(i))

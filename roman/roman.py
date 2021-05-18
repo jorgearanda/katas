@@ -24,13 +24,20 @@ numerals = [
 ]
 
 
-def to_roman(arabic):
-    if arabic == 0:
-        return ""
+def to_roman(arabic: int) -> str:
     for numeral in numerals:
         if arabic >= numeral.value:
             return numeral.symbol + to_roman(arabic - numeral.value)
+    return ""
 
 
-# Fourth pass, a recursive solution (not my original idea) that feels more
-# elegant than the previous string substitution.
+def to_arabic(roman: str) -> int:
+    for numeral in numerals:
+        if roman.startswith(numeral.symbol):
+            return numeral.value + to_arabic(roman[len(numeral.symbol) :])
+    return 0
+
+
+# Fifth pass. I added a to_arabic() for the first time, as well as a test for all
+# numbers from 1 to 3999. Added more type hints; simplified the code in each
+# recursion at the slight expense of performance.
