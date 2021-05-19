@@ -26,7 +26,7 @@ numerals = [
 
 def to_roman(arabic: int) -> str:
     for numeral in numerals:
-        if arabic >= numeral.value:
+        if numeral.value <= arabic:
             return numeral.symbol + to_roman(arabic - numeral.value)
     return ""
 
@@ -38,6 +38,4 @@ def to_arabic(roman: str) -> int:
     return 0
 
 
-# Fifth pass. I added a to_arabic() for the first time, as well as a test for all
-# numbers from 1 to 3999. Added more type hints; simplified the code in each
-# recursion at the slight expense of performance.
+# Sixth pass. Minuscule change this time.
